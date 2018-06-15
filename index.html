@@ -44,7 +44,7 @@ if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetomet
   accelerometer.start();
   
   if ('GravitySensor' in window) {
-    let gravity = new GravitySensor();
+    let gravity = new Accelerometer();
     gravity.addEventListener('reading', e => accelerationHandler(gravity, 'moAccelGrav'));
     gravity.start();
   }
