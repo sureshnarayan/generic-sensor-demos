@@ -20,14 +20,16 @@
               <td id="moRotation"></td>
             </tr>
             <tr>
+              <td>compass</td>
+              <td id="moCompass"></td>
+            </tr>
+            <tr>
               <td>interval (ms)</td>
               <td id="moInterval"></td>
             </tr>
           </table>
-          
-          <p><small>Demo based on <a href="https://www.html5rocks.com/en/tutorials/device/orientation/" target="_blank">HTML5 Rocks</a> article.</small></p>
-          <script>
-            if ('LinearAccelerationSensor' in window && 'Gyroscope' in window) {
+<script>
+if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetometer' in window) {
   document.getElementById('moApi').innerHTML = 'Generic Sensor API';
   
   let lastReadingTimestamp;
@@ -52,8 +54,12 @@
     alpha: gyroscope.x,
     beta: gyroscope.y,
     gamma: gyroscope.z
-  }));
+  }, 'moRotation'));
   gyroscope.start();
+
+  let compass = new Magnetometer();
+  compass.addEventListener('reading', e => accelerationHandler(compass, 'moCompass'));
+  compass.start();
   
 } else if ('DeviceMotionEvent' in window) {
   document.getElementById('moApi').innerHTML = 'Device Motion API';
@@ -61,7 +67,8 @@
   var onDeviceMotion = function (eventData) {
     accelerationHandler(eventData.acceleration, 'moAccel');
     accelerationHandler(eventData.accelerationIncludingGravity, 'moAccelGrav');
-    rotationHandler(eventData.rotationRate);
+    rotationHandler(eventData.rotationRate, 'moRotation');
+    accelerationHandler(eventData.rotationRate, 'moCompass');
     intervalHandler(eventData.interval);
   }
   
@@ -79,18 +86,18 @@ function accelerationHandler(acceleration, targetId) {
   document.getElementById(targetId).innerHTML = info;
 }
 
-function rotationHandler(rotation) {
+function rotationHandler(rotation, targetId) {
   var info, xyz = "[X, Y, Z]";
 
   info = xyz.replace("X", rotation.alpha && rotation.alpha.toFixed(3));
   info = info.replace("Y", rotation.beta && rotation.beta.toFixed(3));
   info = info.replace("Z", rotation.gamma && rotation.gamma.toFixed(3));
-  document.getElementById("moRotation").innerHTML = info;
+  document.getElementById(targetId).innerHTML = info;
 }
 
 function intervalHandler(interval) {
   document.getElementById("moInterval").innerHTML = interval;
 }
-        </script>
+</script>
     </body>
 </html>
