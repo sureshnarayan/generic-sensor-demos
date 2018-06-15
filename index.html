@@ -2,7 +2,7 @@
     <head>
     </head>
     <body>
-        <table class="table table-striped table-bordered">
+        <table>
             <tr>
               <td>API used</td>
               <td id="moApi"></td>
@@ -29,7 +29,7 @@
             </tr>
           </table>
 <script>
-if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetometer' in window) {
+if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetometer' in window && 'Accelerometer' in window) {
   document.getElementById('moApi').innerHTML = 'Generic Sensor API';
   
   let lastReadingTimestamp;
@@ -43,11 +43,9 @@ if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetomet
   });
   accelerometer.start();
   
-  if ('GravitySensor' in window) {
-    let gravity = new Accelerometer();
-    gravity.addEventListener('reading', e => accelerationHandler(gravity, 'moAccelGrav'));
-    gravity.start();
-  }
+  let gravity = new Accelerometer();
+  gravity.addEventListener('reading', e => accelerationHandler(gravity, 'moAccelGrav'));
+  gravity.start();
   
   let gyroscope = new Gyroscope();
   gyroscope.addEventListener('reading', e => rotationHandler({
