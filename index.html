@@ -27,24 +27,36 @@
               <td>interval (ms)</td>
               <td id="moInterval"></td>
             </tr>
+            <tr>
+              <td>frequency</td>
+              <td id="moFrequency"></td>
+            </tr>
           </table>
 <script>
 if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetometer' in window && 'Accelerometer' in window) {
   document.getElementById('moApi').innerHTML = 'Generic Sensor API';
   
-  let lastReadingTimestamp;
+  var osc = new Tone.Oscillator({
+			"frequency" : 440,
+			"volume" : -10
+        }).toMaster();
+  osc.start();
+  Tone.Master.volume.rampTo(0, 0.05);
+
+  let lastReadingTimestamp, lastFrequency, timeInterval;
   let accelerometer = new LinearAccelerationSensor();
   accelerometer.addEventListener('reading', e => {
     if (lastReadingTimestamp) {
-      intervalHandler(Math.round(accelerometer.timestamp - lastReadingTimestamp));
+      timeInterval =  Math.round(accelerometer.timestamp - lastReadingTimestamp);
+      intervalHandler(timeInterval);
     }
     lastReadingTimestamp = accelerometer.timestamp
-    accelerationHandler(accelerometer, 'moAccel');
+    sensorHandler(accelerometer, 'moAccel');
   });
   accelerometer.start();
   
   let gravity = new Accelerometer();
-  gravity.addEventListener('reading', e => accelerationHandler(gravity, 'moAccelGrav'));
+  gravity.addEventListener('reading', e => sensorHandler(gravity, 'moAccelGrav'));
   gravity.start();
   
   let gyroscope = new Gyroscope();
@@ -56,17 +68,17 @@ if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetomet
   gyroscope.start();
 
   let compass = new Magnetometer();
-  compass.addEventListener('reading', e => accelerationHandler(compass, 'moCompass'));
+  compass.addEventListener('reading', e => sensorHandler(compass, 'moCompass'));
+  compass.addEventListener('reading', e => toneHandler(compass, timeInterval));
   compass.start();
   
 } else if ('DeviceMotionEvent' in window) {
   document.getElementById('moApi').innerHTML = 'Device Motion API';
   
   var onDeviceMotion = function (eventData) {
-    accelerationHandler(eventData.acceleration, 'moAccel');
-    accelerationHandler(eventData.accelerationIncludingGravity, 'moAccelGrav');
+    sensorHandler(eventData.acceleration, 'moAccel');
+    sensorHandler(eventData.accelerationIncludingGravity, 'moAccelGrav');
     rotationHandler(eventData.rotationRate, 'moRotation');
-    accelerationHandler(eventData.rotationRate, 'moCompass');
     intervalHandler(eventData.interval);
   }
   
@@ -75,13 +87,21 @@ if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetomet
   document.getElementById('moApi').innerHTML = 'No Accelerometer & Gyroscope API available';
 }
 
-function accelerationHandler(acceleration, targetId) {
+function sensorHandler(acceleration, targetId) {
   var info, xyz = "[X, Y, Z]";
 
   info = xyz.replace("X", acceleration.x && acceleration.x.toFixed(3));
   info = info.replace("Y", acceleration.y && acceleration.y.toFixed(3));
   info = info.replace("Z", acceleration.z && acceleration.z.toFixed(3));
   document.getElementById(targetId).innerHTML = info;
+}
+
+function toneHandler(sensor, duration) {
+  var frequency, info;
+  info = sensor.x && sensor.x.toFixed(3);
+  frequency = info * 100 + 1000;
+  Tone.Master.volume.rampTo(frequency, duration*0.001);
+  document.getElementById("moFrequency").innerHTML = frequency;
 }
 
 function rotationHandler(rotation, targetId) {
