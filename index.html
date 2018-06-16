@@ -103,8 +103,8 @@ function toneHandler(sensor, duration) {
   var frequency, info;
   info = sensor.x && sensor.x.toFixed(3);
   frequency = info * 10 + 1000;
-  Tone.Master.volume.rampTo(frequency, duration*0.001);
   document.getElementById("moFrequency").innerHTML = frequency;
+  Tone.Master.volume.rampTo(frequency, duration*0.001);
 }
 
 function rotationHandler(rotation, targetId) {
