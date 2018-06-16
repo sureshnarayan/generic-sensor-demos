@@ -38,11 +38,10 @@ if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetomet
   document.getElementById('moApi').innerHTML = 'Generic Sensor API';
   
   var osc = new Tone.Oscillator({
-			"frequency" : 440,
+			"frequency" : 1000,
 			"volume" : -10
         }).toMaster();
   osc.start();
-  Tone.Master.volume.rampTo(0, 0.05);
 
   let lastReadingTimestamp, lastFrequency, timeInterval;
   let accelerometer = new LinearAccelerationSensor();
