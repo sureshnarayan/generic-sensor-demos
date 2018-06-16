@@ -1,5 +1,6 @@
 <html>
     <head>
+        <script src="https://tonejs.github.io/build/Tone.js"></script>
     </head>
     <body>
         <table>
@@ -79,6 +80,8 @@ if ('LinearAccelerationSensor' in window && 'Gyroscope' in window && 'Magnetomet
     sensorHandler(eventData.acceleration, 'moAccel');
     sensorHandler(eventData.accelerationIncludingGravity, 'moAccelGrav');
     rotationHandler(eventData.rotationRate, 'moRotation');
+    sensorHandler(eventData.rotationRate, 'moCompass');
+    sensorHandler(eventData.rotationRate, timeInterval);
     intervalHandler(eventData.interval);
   }
   
